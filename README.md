@@ -1,4 +1,4 @@
-# Aula 1
+# Aula 2
 
 Esta branch contem a criação do projeto `alura-stickers`.
 
