@@ -1,5 +1,7 @@
 package com.example.alurastickers;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -22,14 +24,36 @@ public class AluraStickersApplication {
 			HttpEntity entity = httpResponse.getEntity();
 			if (entity != null) {
 				String resultado = EntityUtils.toString(entity);
-				System.out.println(resultado);
 
 				List<Map<String, String>> listaFilmes = new JsonParser().parse(resultado);
 				
+				int posicao;
+				String limpa;
+				int contador = 1;
+				int tamanho = String.valueOf(listaFilmes.size()).length();
+				
+				GeradorFigurinhas geradorFigurinhas = new GeradorFigurinhas();
+
 				for (Map<String, String> filme : listaFilmes) {
-					System.out.println(filme.get("title"));
-					System.out.println(filme.get("image"));
-					System.out.println(filme.get("imDbRating"));
+					System.out.println(String.format("%0" + tamanho + "d - %s", contador++, filme.get("title")));
+
+					try {
+						posicao = filme.get("image").lastIndexOf("@");
+
+						if (posicao <= 0) {
+							posicao = filme.get("image").lastIndexOf(".");
+						}
+
+						limpa = filme.get("image").substring(0, posicao + 1);
+
+						InputStream inputStream = new URL(limpa).openStream();
+						String caminhoNomeArquivo = "src/main/resources/imagens/saida/" + filme.get("title") + ".png";
+
+						geradorFigurinhas.criar(inputStream, caminhoNomeArquivo);
+					} catch (Exception e) {
+						System.out.println(String.format("Erro no filme %s ", filme.get("title")));
+						continue;
+					}
 				}
 			}
 		}
